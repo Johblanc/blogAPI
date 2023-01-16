@@ -14,4 +14,15 @@ export class CommentsServices{
         return undefined
     }
 
+    async add(userId :number, articleId :number ,content : string) : Promise<TComment | undefined>
+    {
+        const data : QueryResult<TComment> = await client.query('INSERT INTO comments (user_id, article_id ,content) VALUES ($1,$2,$3) RETURNING *',[userId, articleId ,content]);
+
+        if(data.rowCount)
+        {
+            return data.rows[0];
+        }
+        return undefined
+    }
+
 }
