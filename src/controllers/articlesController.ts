@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { faillingId } from "../module/faillingTest";
+import { faillingId, faillingString } from "../module/faillingTest";
 import { Responser } from "../module/Responser";
 import { ArticlesServices } from "../services/articlesServices";
 
@@ -62,6 +62,69 @@ export class ArticlesController
             
         }
         catch (err : any)
+        {
+            console.log(err.stack)
+            responcer.send() ;
+        }
+    }
+
+    async edit (req : Request , res : Response) : Promise<void>
+    {
+        let responcer = new Responser(req, res) ;
+        const id = Number(req.params.id) ;
+        const { title, content, tokenId} = req.body;
+
+
+    
+        // Vérifiction de la presence des paramètres nécessaires
+        if (faillingId(id) || (faillingString(title) && faillingString(content))) 
+        {
+            responcer.status = 400 ;
+            responcer.message = "Structure incorrect : id : number  {  message : string , done : boolean } ou { message : string } ou  { done : boolean }" ;
+            responcer.send() ;
+            return ;
+        }
+    
+        try 
+        {
+            const verificator = await articlesServices.getById(id) ;
+            if(!verificator)
+            {
+                responcer.status = 404 ;
+                responcer.message = `Le ticket ${id} n'existe pas` ;
+                responcer.send() ;
+                return ;
+            };
+
+            if(verificator?.user_id === tokenId)
+            {
+                responcer.status = 404 ;
+                responcer.message = `Ce ticket ne vous appartient pas` ;
+                responcer.send() ;
+                return ;
+            };
+            // Exécution de la bonne requête en fonction des paramètres
+            let data ;
+            if ( ! (faillingString(title) || faillingString(content))) 
+            {
+                data = await articlesServices.edit(id, title, content);
+            } 
+            else if (! faillingString(title))
+            {
+                data = await articlesServices.editTitre(id, title);
+            } 
+            else 
+            {
+                data = await articlesServices.editContent(id, content);
+            }
+    
+            responcer.status = 200 ;
+            responcer.message = `Le ticket ${id} a bien été modifier` ;
+            responcer.data = data ;
+            responcer.send() ;
+            
+        }
+        catch (err:any) 
         {
             console.log(err.stack)
             responcer.send() ;
