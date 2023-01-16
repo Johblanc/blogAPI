@@ -38,4 +38,37 @@ export class ArticlesServices{
         return undefined
     }
 
+    async edit(id : number, title : string , content : string) : Promise<TArticle | undefined>
+    {
+        const data : QueryResult<TArticle> = await client.query('UPDATE articles SET title = $1 ,content = $2 WHERE id = $3) RETURNING *', [title,content,id]);
+
+        if(data.rowCount)
+        {
+            return data.rows[0];
+        }
+        return undefined
+    }
+
+    async editTitre(id : number, title : string ) : Promise<TArticle | undefined>
+    {
+        const data : QueryResult<TArticle> = await client.query('UPDATE articles SET title = $1 WHERE id = $2) RETURNING *', [title,id]);
+
+        if(data.rowCount)
+        {
+            return data.rows[0];
+        }
+        return undefined
+    }
+
+    async editContent(id : number , content : string) : Promise<TArticle | undefined>
+    {
+        const data : QueryResult<TArticle> = await client.query('UPDATE articles SET content = $1 WHERE id = $2) RETURNING *', [content,id]);
+
+        if(data.rowCount)
+        {
+            return data.rows[0];
+        }
+        return undefined
+    }
+
 }
