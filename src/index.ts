@@ -1,14 +1,27 @@
-// imports
-// npm i express
-// npm i body-parser
+
+import { JwtPayload } from "jsonwebtoken";
+import * as express from 'express';
+import * as dotenv from 'dotenv';
 
 import { Request, Response } from "express";
 
-const express = require('express');
 
-require('dotenv').config()
+dotenv.config()
 
-const Responcer = require('./module/Responcer') ;
+import {Responser} from './module/Responser';
+import { usersRouter } from "./routes/usersRoute";
+
+declare global
+{
+    namespace Express
+    {
+        interface Request
+        {
+            id?: JwtPayload,
+            adminLvl?: JwtPayload
+        }
+    }
+}
 
 
 // declarations
@@ -36,18 +49,15 @@ app.use(function (req : Request, res : Response, next: () => void) {
 });
 
 //app.use('/api/tickets', ticketsRouter);
-//app.use('/api/users', usersRouter);
+app.use('/api/users', usersRouter);
 
 
 app.all('*', async (req: Request, res: Response) => 
 {
-    let rpcr = new Responcer({
+    new Responser<undefined>(req,res,{
         status : 404,
         message : `Cette requête n'existe pas`
-    })
-    console.log(`* | ${rpcr.info()}`);
-    console.log(req);
-    res = rpcr.send(res)
+    }).send()
 });
 
 // ecoute le port 8000
