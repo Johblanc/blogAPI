@@ -44,5 +44,11 @@ export class CommentsServices{
         return data.rowCount;
     }
 
+    async deleteByArticleId(articleId :number) : Promise<number>
+    {
+        const data : QueryResult<TComment> = await client.query('DELETE FROM comments WHERE article_id = $1', [ articleId ] );
+
+        return data.rowCount;
+    }
 
 }
