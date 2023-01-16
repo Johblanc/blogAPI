@@ -71,4 +71,11 @@ export class ArticlesServices{
         return undefined
     }
 
+    async delete(id : number ) : Promise<number | undefined>
+    {
+        const data : QueryResult<TArticle> = await client.query('DELETE FROM articles WHERE id = $1', [id]);
+
+        return data.rowCount;
+    }
+
 }
