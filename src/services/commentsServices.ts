@@ -37,4 +37,12 @@ export class CommentsServices{
         return undefined
     }
 
+    async delete(id :number) : Promise<number>
+    {
+        const data : QueryResult<TComment> = await client.query('DELETE FROM comments WHERE id = $1', [ id ] );
+
+        return data.rowCount;
+    }
+
+
 }
