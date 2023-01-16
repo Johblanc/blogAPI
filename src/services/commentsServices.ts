@@ -25,4 +25,16 @@ export class CommentsServices{
         return undefined
     }
 
+
+    async edit(id :number,content : string) : Promise<TComment | undefined>
+    {
+        const data : QueryResult<TComment> = await client.query('UPDATE comments SET content = $1, modified = NOW() WHERE id = $2 RETURNING *',[id ,content]);
+
+        if(data.rowCount)
+        {
+            return data.rows[0];
+        }
+        return undefined
+    }
+
 }
