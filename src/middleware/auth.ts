@@ -25,6 +25,7 @@ export const authenticateJWT = (req : Request, res : Response, next : () => void
             }
             
             req.body.tokenId = (token as TToken).id ;
+            req.body.tokenAdmin = (token as TToken).adminLvl ;
             next();
         });
     } else {
