@@ -14,4 +14,15 @@ export class AdminLvlServices{
         return undefined
     }
 
+    async getbyId(id : number) : Promise<TAdminLvl | undefined>
+    {
+        const data : QueryResult<TAdminLvl> = await client.query('SELECT * FROM admin_lvl WHERE id = $1',[id]);
+
+        if(data.rowCount)
+        {
+            return data.rows[0];
+        }
+        return undefined
+    }
+
 }
