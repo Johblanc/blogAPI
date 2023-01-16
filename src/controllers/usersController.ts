@@ -7,10 +7,10 @@ import {Responser} from '../module/Responser';
 import { faillingString } from '../module/faillingTest';
 
 const accessTokenSecret = process.env.SECRET_TOKEN! ;
-import {UsersService} from '../services/usersService';
+import {UsersServices} from '../services/usersServices';
 import { TUser } from "../types/TUser";
 
-const usersService = new UsersService()
+const usersService = new UsersServices()
 
 
 export class UsersController 
