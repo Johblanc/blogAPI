@@ -13,6 +13,16 @@ export class CommentsServices{
         }
         return undefined
     }
+    async getById( id :number) : Promise<TComment | undefined>
+    {
+        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE id = $1',[id]);
+
+        if(data.rowCount)
+        {
+            return data.rows[0];
+        }
+        return undefined
+    }
     async getByArticleId(article_id :number) : Promise<TComment[] | undefined>
     {
         const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE article_id = $1',[article_id]);
