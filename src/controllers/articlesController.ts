@@ -87,7 +87,7 @@ export class ArticlesController
             const data = await articlesServices.add(tokenId, title, content);
     
             responser.status = 201 ;
-            responser.message = `Création du ticket ${data!.id}` ;
+            responser.message = `Création de l'article ${data!.id}` ;
             responser.data = data ;
             responser.send() ;
         }
@@ -110,7 +110,7 @@ export class ArticlesController
         if (faillingId(id) || (faillingString(title) && faillingString(content))) 
         {
             responser.status = 400 ;
-            responser.message = "Structure incorrect : id : number  {  message : string , done : boolean } ou { message : string } ou  { done : boolean }" ;
+            responser.message = "Structure incorrect : id : number  {  title : string , content : string } ou { title : string } ou { content : string }" ;
             responser.send() ;
             return ;
         }
@@ -121,7 +121,7 @@ export class ArticlesController
             if(!verificator)
             {
                 responser.status = 404 ;
-                responser.message = `Le ticket ${id} n'existe pas` ;
+                responser.message = `L'article ${id} n'existe pas` ;
                 responser.send() ;
                 return ;
             };
@@ -129,7 +129,7 @@ export class ArticlesController
             if(verificator?.user_id === tokenId)
             {
                 responser.status = 404 ;
-                responser.message = `Ce ticket ne vous appartient pas` ;
+                responser.message = `Cet article ne vous appartient pas` ;
                 responser.send() ;
                 return ;
             };
@@ -149,7 +149,7 @@ export class ArticlesController
             }
     
             responser.status = 200 ;
-            responser.message = `Le ticket ${id} a bien été modifier` ;
+            responser.message = `L'article ${id} a bien été modifier` ;
             responser.data = data ;
             responser.send() ;
             
@@ -180,7 +180,7 @@ export class ArticlesController
             if(!verificator)
             {
                 responser.status = 404 ;
-                responser.message = `Le ticket ${id} n'existe pas` ;
+                responser.message = `L'article ${id} n'existe pas` ;
                 responser.send() ;
                 return ;
             };
@@ -188,7 +188,7 @@ export class ArticlesController
             if(verificator?.user_id === tokenId)
             {
                 responser.status = 404 ;
-                responser.message = `Ce ticket ne vous appartient pas` ;
+                responser.message = `Cet article ne vous appartient pas` ;
                 responser.send() ;
                 return ;
             };
@@ -196,7 +196,7 @@ export class ArticlesController
             const data = await articlesServices.delete(id);
             
             responser.status = 200 ;
-            responser.message = `Le ticket ${id} a bien été supprimé` ;
+            responser.message = `L'article ${id} a bien été supprimé` ;
             responser.data = data
             responser.send() ;
             
