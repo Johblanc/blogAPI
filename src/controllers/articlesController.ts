@@ -68,6 +68,35 @@ export class ArticlesController
         }
     }
 
+    async add (req : Request , res : Response) : Promise<void>
+    {
+        let responcer = new Responser(req, res) ;
+        const { tokenId, title, content} = req.body;
+    
+        // Vérifiction du Type du user_id entrant
+        if ( faillingString(title) || faillingString(content) )
+        {
+            responcer.status = 400 ;
+            responcer.message = `Structure incorrect : { title : string , content : string }` ;
+            responcer.send() ;
+        } 
+        
+        try 
+        {
+            const data = await articlesServices.add(tokenId, title, content);
+    
+            responcer.status = 201 ;
+            responcer.message = `Création du ticket ${data!.id}` ;
+            responcer.data = data ;
+            responcer.send() ;
+        }
+        catch (err :any) 
+        {
+            console.log(err.stack)
+            responcer.send() ;
+        }
+    }
+
     async edit (req : Request , res : Response) : Promise<void>
     {
         let responcer = new Responser(req, res) ;
@@ -130,4 +159,7 @@ export class ArticlesController
             responcer.send() ;
         }
     }
+
+    // add
+    // delete
 }
