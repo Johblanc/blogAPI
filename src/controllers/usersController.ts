@@ -16,7 +16,7 @@ const usersService = new UsersServices()
 export class UsersController 
 {
 
-    async register (req : Request , res : Response)
+    async register (req : Request , res : Response) : Promise<void>
     {
         let responcer = new Responser<Partial<TUser>>(req, res) ;
         const pass = req.body.pass ;
@@ -63,7 +63,7 @@ export class UsersController
         });
     }
 
-    async login (req : Request , res : Response)
+    async login (req : Request , res : Response) : Promise<void>
     {
         let responcer = new Responser(req , res ) ;
         const pass = req.body.pass ;
