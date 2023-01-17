@@ -92,4 +92,51 @@ export class CommentsController {
             responser.send() ;
         }
     }
+
+    async delete (req : Request , res : Response) : Promise<void>
+    {
+        let responser = new Responser<number>(req, res) ;
+        const id = Number(req.params.id);
+        const { tokenId } = req.body;
+    
+        // Vérifiction du Type du user_id entrant
+        if ( faillingId(id) )
+        {
+            responser.status = 400 ;
+            responser.message = `Structure incorrect : { id : number , content : string }` ;
+            responser.send() ;
+            return ;
+        } 
+        
+        try 
+        {
+            const verificator = await commentsServices.getById(id) ;
+            if(!verificator)
+            {
+                responser.status = 404 ;
+                responser.message = `Le commentaire ${id} n'existe pas` ;
+                responser.send() ;
+                return ;
+            };
+
+            if(verificator?.user_id === tokenId)
+            {
+                responser.status = 404 ;
+                responser.message = `Ce commentaire ne vous appartient pas` ;
+                responser.send() ;
+                return ;
+            };
+            const data = await commentsServices.delete(id);
+    
+            responser.status = 201 ;
+            responser.message = `Suppression du Commentaire ${id}` ;
+            responser.data = data ;
+            responser.send() ;
+        }
+        catch (err :any) 
+        {
+            console.log(err.stack)
+            responser.send() ;
+        }
+    }
 }
