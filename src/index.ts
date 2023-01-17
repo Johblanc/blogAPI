@@ -51,8 +51,8 @@ app.use(function (req : Request, res : Response, next: () => void) {
 });
 
 app.use('/api/users'    , usersRouter       );
-app.use('/api/article'  , articlesRouter    );
-app.use('/api/comment'  , commentsRouter    );
+app.use('/api/articles'  , articlesRouter    );
+app.use('/api/comments'  , commentsRouter    );
 
 
 app.all('*', async (req: Request, res: Response) => 
