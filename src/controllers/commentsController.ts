@@ -10,6 +10,37 @@ const commentsServices = new CommentsServices()
 
 export class CommentsController {
 
+    async getByArticleId (req : Request , res : Response) : Promise<void>
+    {
+        let responser = new Responser<TComment[]>(req, res) ;
+        const article_id = Number(req.params.id) ;
+    
+        // Vérifiction du Type du user_id entrant
+        if ( faillingId(article_id) )
+        {
+            responser.status = 400 ;
+            responser.message = `Structure incorrect : id : number` ;
+            responser.send() ;
+            return ;
+        } 
+        
+        try 
+        {
+            const data = await commentsServices.getByArticleId( article_id );
+    
+            responser.status = 201 ;
+            responser.message = `Récupération de ${data?.length} Commentaires` ;
+            responser.data = data ;
+            responser.send() ;
+        }
+        catch (err :any) 
+        {
+            console.log(err.stack)
+            responser.send() ;
+        }
+    }
+
+
     async add (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TComment>(req, res) ;
