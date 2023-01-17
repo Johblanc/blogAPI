@@ -5,11 +5,13 @@ import * as dotenv from 'dotenv';
 
 import { Request, Response } from "express";
 
+import {Responser} from './module/Responser';
+import { usersRouter } from "./routes/usersRouters";
+import { articlesRouter } from "./routes/articlesRouters";
+import { commentsRouter } from "./routes/commentsRouters";
+
 
 dotenv.config()
-
-import {Responser} from './module/Responser';
-import { usersRouter } from "./routes/usersRoute";
 
 declare global
 {
@@ -48,8 +50,9 @@ app.use(function (req : Request, res : Response, next: () => void) {
     next();
 });
 
-//app.use('/api/tickets', ticketsRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/users'    , usersRouter       );
+app.use('/api/article'  , articlesRouter    );
+app.use('/api/comment'  , commentsRouter    );
 
 
 app.all('*', async (req: Request, res: Response) => 
