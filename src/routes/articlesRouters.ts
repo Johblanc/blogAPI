@@ -1,5 +1,6 @@
 import * as express from 'express';
 import {ArticlesController} from '../controllers/articlesController';
+import { authenticateJWT } from '../middleware/auth';
 
 
 const articlesController = new ArticlesController() ;
@@ -9,8 +10,8 @@ articlesRouter.get('/',articlesController.getAll) ;
 
 articlesRouter.get('/:id', articlesController.getById) ;
 
-articlesRouter.post('/',articlesController.add) ;
+articlesRouter.post('/',authenticateJWT , articlesController.add) ;
 
-articlesRouter.put('/:id',articlesController.edit) ;
+articlesRouter.put('/:id',authenticateJWT, articlesController.edit) ;
 
-articlesRouter.delete('/:id',articlesController.delete) ; 
+articlesRouter.delete('/:id',authenticateJWT, articlesController.delete) ; 

@@ -29,7 +29,7 @@ export class CommentsController {
             const data = await commentsServices.getByArticleId( article_id );
     
             responser.status = 201 ;
-            responser.message = `Récupération de ${data?.length} Commentaires` ;
+            responser.message = `Récupération de ${data?.length || 0} Commentaires` ;
             responser.data = data ;
             responser.send() ;
         }
@@ -50,7 +50,7 @@ export class CommentsController {
         if ( faillingId(article_id) || faillingString(content) )
         {
             responser.status = 400 ;
-            responser.message = `Structure incorrect : { id : number , content : string }` ;
+            responser.message = `Structure incorrect : { article_id : number , content : string }` ;
             responser.send() ;
             return ;
         } 
@@ -76,9 +76,9 @@ export class CommentsController {
         let responser = new Responser<TComment>(req, res) ;
         const id = Number(req.params.id) ;
         const { tokenId , content } = req.body;
-
-
-    
+        
+        
+        
         // Vérifiction de la presence des paramètres nécessaires
         if (faillingId(id) || faillingString(content))
         {
@@ -86,8 +86,8 @@ export class CommentsController {
             responser.message = "Structure incorrect : id : number { content : string }" ;
             responser.send() ;
             return ;
+            
         }
-    
         try 
         {
             const verificator = await commentsServices.getById(id) ;
@@ -98,8 +98,8 @@ export class CommentsController {
                 responser.send() ;
                 return ;
             };
-
-            if(verificator?.user_id === tokenId)
+            
+            if(verificator?.user_id !== tokenId)
             {
                 responser.status = 404 ;
                 responser.message = `Ce commentaire ne vous appartient pas` ;
@@ -108,8 +108,10 @@ export class CommentsController {
             };
             // Exécution de la bonne requête en fonction des paramètres
             
+            
             const data = await commentsServices.edit(id, content);
             
+            console.log(data);
     
             responser.status = 200 ;
             responser.message = `Le commentaire ${id} a bien été modifier` ;
@@ -150,7 +152,7 @@ export class CommentsController {
                 return ;
             };
 
-            if(verificator?.user_id === tokenId)
+            if(verificator?.user_id !== tokenId)
             {
                 responser.status = 404 ;
                 responser.message = `Ce commentaire ne vous appartient pas` ;

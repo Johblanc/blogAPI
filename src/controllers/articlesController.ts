@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import { faillingId, faillingString } from "../module/faillingTest";
 import { Responser } from "../module/Responser";
 import { ArticlesServices } from "../services/articlesServices";
+import { CommentsServices } from "../services/commentsServices";
 import { TArticle } from "../types/TArticle";
 
 
 const articlesServices = new ArticlesServices()
+const commentsServices = new CommentsServices()
 
 export class ArticlesController 
 {
@@ -117,6 +119,7 @@ export class ArticlesController
     
         try 
         {
+            
             const verificator = await articlesServices.getById(id) ;
             if(!verificator)
             {
@@ -125,14 +128,15 @@ export class ArticlesController
                 responser.send() ;
                 return ;
             };
-
-            if(verificator?.user_id === tokenId)
+            
+            if(verificator?.user_id !== tokenId)
             {
                 responser.status = 404 ;
                 responser.message = `Cet article ne vous appartient pas` ;
                 responser.send() ;
                 return ;
             };
+            console.log("test----------->");
             // Exécution de la bonne requête en fonction des paramètres
             let data ;
             if ( ! (faillingString(title) || faillingString(content))) 
@@ -192,7 +196,7 @@ export class ArticlesController
                 responser.send() ;
                 return ;
             };
-    
+            await commentsServices.deleteByArticleId(id)
             const data = await articlesServices.delete(id);
             
             responser.status = 200 ;

@@ -1,7 +1,7 @@
 
 export type TArticle = {
-    id ?         : number ,
-    user_id ?    : number ,
+    id          : number ,
+    user_id     : number ,
     title       : string ,
     content     : string ,
     created     : Date ,

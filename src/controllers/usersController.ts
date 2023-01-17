@@ -6,9 +6,12 @@ import * as jwt from 'jsonwebtoken';
 import {Responser} from '../module/Responser';
 import { faillingString } from '../module/faillingTest';
 
-const accessTokenSecret = process.env.SECRET_TOKEN! ;
+import * as dotenv from 'dotenv';
 import {UsersServices} from '../services/usersServices';
 import { TUser } from "../types/TUser";
+
+dotenv.config()
+const accessTokenSecret = process.env.SECRET_TOKEN! ;
 
 const usersService = new UsersServices()
 
