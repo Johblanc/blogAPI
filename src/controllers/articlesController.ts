@@ -159,7 +159,50 @@ export class ArticlesController
             responcer.send() ;
         }
     }
+    async delete (req : Request , res : Response) : Promise<void>
+    {
+        let responcer = new Responser(req, res) ;
+        const id = Number(req.params.id);
+        const tokenId = req.body.tokenId;
+    
+        // Vérifiction du Type de l'id entrante
+        if (faillingId(id))
+        {
+            responcer.status = 400 ;
+            responcer.message = `${id} n'est pas un nombre entier` ;
+            responcer.send() ;
+            return ;
+        }
+        try 
+        {
+            const verificator = await articlesServices.getById(id) ;
+            if(!verificator)
+            {
+                responcer.status = 404 ;
+                responcer.message = `Le ticket ${id} n'existe pas` ;
+                responcer.send() ;
+                return ;
+            };
 
-    // add
-    // delete
+            if(verificator?.user_id === tokenId)
+            {
+                responcer.status = 404 ;
+                responcer.message = `Ce ticket ne vous appartient pas` ;
+                responcer.send() ;
+                return ;
+            };
+    
+            const data = await articlesServices.delete(id);
+            
+            responcer.status = 200 ;
+            responcer.message = `Le ticket ${id} a bien été supprimé` ;
+            responcer.send() ;
+            
+        }
+        catch (err :any) 
+        {
+            console.log(err.stack);
+            responcer.send() ;
+        }
+    }
 }
