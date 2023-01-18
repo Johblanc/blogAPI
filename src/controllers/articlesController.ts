@@ -91,6 +91,52 @@ export class ArticlesController
     }
 
     /** 
+     * Contrôle préalable à la récupération d'un article grâce à son id ainsi que ses commentaires
+     * * Admin : 3
+     * * Request :
+     *   * param.id => L'id de l'article (number | string)
+     * * Response.data : L'article correspondant à l'id (TArticle)
+     * */
+    async getByIdWithComment (req : Request , res : Response) : Promise<void>
+    {
+        let responser = new Responser<TArticle>(req, res) ;
+        const id = req.params.id ;
+        
+        if (faillingId(id))
+        {
+            responser.status = 400 ;
+            responser.message = `${id} n'est pas un nombre entier` ;
+            responser.send() ;
+            return ;
+        } 
+    
+        try 
+        {
+            const data = await articlesServices.getById(Number(id));
+            if (data) {
+                const comments = await commentsServices.getByArticleId(Number(id)) || []
+                data.comments = comments
+                
+                responser.status = 200 ;
+                responser.message = `Récupération de l'article ${id}` ;
+                responser.data = data ;
+                responser.send() ;
+                return ;
+    
+            } 
+            responser.status = 404 ;
+            responser.message = `L'article ${id} n'existe pas` ;
+            responser.send() ;
+            
+        }
+        catch (err : any)
+        {
+            console.log(err.stack)
+            responser.send() ;
+        }
+    }
+
+    /** 
      * Contrôle préalable à l'ajout d'un nouvel article
      * * Admin : 2
      * * Request :

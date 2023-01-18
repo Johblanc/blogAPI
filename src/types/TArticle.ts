@@ -1,3 +1,4 @@
+import { TComment } from "./TComment"
 
 /** Type pour l'article */
 export type TArticle = {
@@ -6,5 +7,6 @@ export type TArticle = {
     title       : string ,
     content     : string ,
     created     : Date ,
-    modified    : Date
+    modified    : Date,
+    comments ?  : TComment[]
 }

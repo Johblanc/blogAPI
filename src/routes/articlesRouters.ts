@@ -15,6 +15,9 @@ articlesRouter.get('/',articlesController.getAll) ;
 /** Route de récupération d'un article avec son id*/
 articlesRouter.get('/:id', articlesController.getById) ;
 
+/** Route de récupération d'un article avec son id avec ses commentaires*/
+articlesRouter.get('/withComments/:id', articlesController.getByIdWithComment) ;
+
 /** Route d'ajout d'un article */
 articlesRouter.post('/',authenticateJWT , articlesController.add) ;
 
