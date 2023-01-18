@@ -1,5 +1,6 @@
 
 
+/** Type pour le user */
 export type TUser = {
     id          : number ,
     password    : string ,

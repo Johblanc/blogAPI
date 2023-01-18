@@ -1,8 +1,9 @@
-import * as dotenv from 'dotenv';
-dotenv.config()
+import { Client } from 'pg';        // Client
+import * as dotenv from 'dotenv';   // Client
+dotenv.config()                     // Client
 
-import { Client } from 'pg';
 
+/** Acces au serveur SQL */
 export const client = new Client({
     user: process.env.DB_USERNAME,
     host: process.env.DB_HOST,

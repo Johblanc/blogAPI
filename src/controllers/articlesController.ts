@@ -1,16 +1,29 @@
-import { Request, Response } from "express";
-import { faillingId, faillingString } from "../module/faillingTest";
-import { Responser } from "../module/Responser";
-import { ArticlesServices } from "../services/articlesServices";
-import { CommentsServices } from "../services/commentsServices";
-import { TArticle } from "../types/TArticle";
+import { Request, Response } from "express";                            // TypeScript
+import { TArticle } from "../types/TArticle";                           // TypeScript
 
+import { Responser } from '../module/Responser';                        // Module
+import { faillingId, faillingString } from "../module/faillingTest";    // Module
 
-const articlesServices = new ArticlesServices()
-const commentsServices = new CommentsServices()
+import { ArticlesServices } from "../services/articlesServices";        // API
+import { CommentsServices } from "../services/commentsServices";        // API
+const articlesServices = new ArticlesServices()                         // API
+const commentsServices = new CommentsServices()                         // API
 
+/**
+ * Class permettant le contrôle des données entrantes pour les requête articles
+ * * **.getAll()** : Contrôle préalable à la récupération de tous les articles 
+ * * **.getById()** : Contrôle préalable à la récupération d'un article grâce à son id
+ * * **.add()** : Contrôle préalable à l'ajout d'un nouvel article
+ * * **.edit()** : Contrôle préalable à la modification d'un article
+ * * **.delete()** : Contrôle préalable à la suppression d'un article
+ */
 export class ArticlesController 
 {
+    /** 
+     * Contrôle préalable à la récupération de tous les articles 
+     * * Admin : 3
+     * * Response : Liste de tous les articles (TArticle[])
+     * */
     async getAll (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TArticle[]>(req, res) ;
@@ -31,12 +44,18 @@ export class ArticlesController
         }
     }
 
+    /** 
+     * Contrôle préalable à la récupération d'un article grâce à son id
+     * * Admin : 3
+     * * Request :
+     *   * param.id => L'id de l'article (number | string)
+     * * Response.data : L'article correspondant à l'id (TArticle)
+     * */
     async getById (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TArticle>(req, res) ;
-        const id = Number(req.params.id) ;
+        const id = req.params.id ;
         
-        // Vérifiction du Type de l'id entrante
         if (faillingId(id))
         {
             responser.status = 400 ;
@@ -47,9 +66,8 @@ export class ArticlesController
     
         try 
         {
-            const data = await articlesServices.getById(id);
+            const data = await articlesServices.getById(Number(id));
     
-            // Vérifiction de l'existence de l'id
             if (data) {
                 
                 responser.status = 200 ;
@@ -71,10 +89,19 @@ export class ArticlesController
         }
     }
 
+    /** 
+     * Contrôle préalable à l'ajout d'un nouvel article
+     * * Admin : 2
+     * * Request :
+     *   * body.tokenId => L'id du user (number)
+     *   * body.title => le titre de l'article (string)
+     *   * body.content => le contenu de l'article (string)
+     * * Response.data : L'article créé (TArticle)
+     * */
     async add (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TArticle>(req, res) ;
-        const { tokenId, title, content} = req.body;
+        const { tokenId , title , content } = req.body ;
     
         // Vérifiction du Type du user_id entrant
         if ( faillingString(title) || faillingString(content) )
@@ -100,15 +127,22 @@ export class ArticlesController
         }
     }
 
+    /** 
+     * Contrôle préalable à la modification d'un article
+     * * Admin : 2
+     * * Request :
+     *   * param.id => L'id de l'article (number | string)
+     *   * body.tokenId => L'id du user (number)
+     *   * body.title => le titre de l'article (string) / optionnel si content
+     *   * body.content => le contenu de l'article (string) / optionnel si title
+     * * Response.data : L'article modifié (TArticle)
+     * */
     async edit (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TArticle>(req, res) ;
         const id = Number(req.params.id) ;
-        const { title, content, tokenId} = req.body;
+        const {tokenId, title, content} = req.body;
 
-
-    
-        // Vérifiction de la presence des paramètres nécessaires
         if (faillingId(id) || (faillingString(title) && faillingString(content))) 
         {
             responser.status = 400 ;
@@ -136,7 +170,6 @@ export class ArticlesController
                 responser.send() ;
                 return ;
             };
-            console.log("test----------->");
             // Exécution de la bonne requête en fonction des paramètres
             let data ;
             if ( ! (faillingString(title) || faillingString(content))) 
@@ -164,13 +197,21 @@ export class ArticlesController
             responser.send() ;
         }
     }
+    
+    /** 
+     * Contrôle préalable à la suppression d'un article
+     * * Admin : 2 
+     * * Request :
+     *   * param.id => L'id de l'article (number | string)
+     *   * body.tokenId => L'id du user (number)
+     * * Response.data : Nombre d'article supprimé (number)
+     * */
     async delete (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<number>(req, res) ;
         const id = Number(req.params.id);
         const tokenId = req.body.tokenId;
     
-        // Vérifiction du Type de l'id entrante
         if (faillingId(id))
         {
             responser.status = 400 ;

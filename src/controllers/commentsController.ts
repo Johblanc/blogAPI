@@ -1,21 +1,33 @@
-import { Request, Response } from "express";
-import { faillingId, faillingString } from "../module/faillingTest";
-import { Responser } from "../module/Responser";
-import { CommentsServices } from "../services/commentsServices";
-import { TComment } from "../types/TComment";
+import { Request, Response } from "express";                            // TypeScript
+import { TComment } from "../types/TComment";                           // TypeScript
 
+import { Responser } from '../module/Responser';                        // Module
+import { faillingId, faillingString } from "../module/faillingTest";    // Module
 
+import { CommentsServices } from "../services/commentsServices";        // API
+const commentsServices = new CommentsServices()                         // API
 
-const commentsServices = new CommentsServices()
-
+/**
+ * Class permettant le contrôle des données entrantes pour les requête comments
+ * * **.getByArticleId()** : Contrôle préalable à la récupération de tous les commentaires d'un article
+ * * **.add()** : Contrôle préalable à l'ajout d'un commentaire
+ * * **.edit()** : Contrôle préalable à la modification d'un commentaire
+ * * **.delete()** : Contrôle préalable à la suppression d'un commentaire
+ */
 export class CommentsController {
 
+    /** 
+     * Contrôle préalable à la récupération de tous les commentaires d'un article
+     * * Admin : 3
+     * * Request :
+     *   * param.id => L'id de l'article (number | string)
+     * * Response.data : Listes des commentaires de l'article (TComment[])
+     * */
     async getByArticleId (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TComment[]>(req, res) ;
-        const article_id = Number(req.params.id) ;
+        const article_id = req.params.id ;
     
-        // Vérifiction du Type du user_id entrant
         if ( faillingId(article_id) )
         {
             responser.status = 400 ;
@@ -26,7 +38,7 @@ export class CommentsController {
         
         try 
         {
-            const data = await commentsServices.getByArticleId( article_id );
+            const data = await commentsServices.getByArticleId( Number(article_id) );
     
             responser.status = 201 ;
             responser.message = `Récupération de ${data?.length || 0} Commentaires` ;
@@ -40,13 +52,20 @@ export class CommentsController {
         }
     }
 
-
+    /** 
+     * Contrôle préalable à l'ajout d'un commentaire
+     * * Admin : 2
+     * * Request :
+     *   * body.tokenId => L'id du user (number)
+     *   * body.article_id => l'id de l'article de ratachement (number)
+     *   * body.content => le contenu du commentaire (string)
+     * * Response.data : Le commentaire créé (TComment)
+     * */
     async add (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TComment>(req, res) ;
         const { tokenId, article_id, content} = req.body;
     
-        // Vérifiction du Type du user_id entrant
         if ( faillingId(article_id) || faillingString(content) )
         {
             responser.status = 400 ;
@@ -71,15 +90,21 @@ export class CommentsController {
         }
     }
 
+    /** 
+     * Contrôle préalable à la modification d'un commentaire
+     * * Admin : 2
+     * * Request :
+     *   * param.id => L'id du commentaire (number | string)
+     *   * body.tokenId => L'id du user (number)
+     *   * body.content => le contenu du commentaire (string)
+     * * Response.data : Le commentaire modifié (TComment)
+     * */
     async edit (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TComment>(req, res) ;
-        const id = Number(req.params.id) ;
+        const id = req.params.id ;
         const { tokenId , content } = req.body;
         
-        
-        
-        // Vérifiction de la presence des paramètres nécessaires
         if (faillingId(id) || faillingString(content))
         {
             responser.status = 400 ;
@@ -90,7 +115,7 @@ export class CommentsController {
         }
         try 
         {
-            const verificator = await commentsServices.getById(id) ;
+            const verificator = await commentsServices.getById(Number(id)) ;
             if(!verificator)
             {
                 responser.status = 404 ;
@@ -106,13 +131,9 @@ export class CommentsController {
                 responser.send() ;
                 return ;
             };
-            // Exécution de la bonne requête en fonction des paramètres
+
+            const data = await commentsServices.edit(Number(id), content);
             
-            
-            const data = await commentsServices.edit(id, content);
-            
-            console.log(data);
-    
             responser.status = 200 ;
             responser.message = `Le commentaire ${id} a bien été modifier` ;
             responser.data = data ;
@@ -126,17 +147,24 @@ export class CommentsController {
         }
     }
 
+    /** 
+     * Contrôle préalable à la suppression d'un commentaire
+     * * Admin : 2
+     * * Request :
+     *   * param.id => L'id du commentaire (number | string)
+     *   * body.tokenId => L'id du user (number)
+     * * Response.data : Nombre de commentaire supprimé (number)
+     * */
     async delete (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<number>(req, res) ;
         const id = Number(req.params.id);
         const { tokenId } = req.body;
     
-        // Vérifiction du Type du user_id entrant
         if ( faillingId(id) )
         {
             responser.status = 400 ;
-            responser.message = `Structure incorrect : { id : number , content : string }` ;
+            responser.message = `Structure incorrect : id : number` ;
             responser.send() ;
             return ;
         } 

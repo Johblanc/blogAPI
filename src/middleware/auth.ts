@@ -1,12 +1,18 @@
-import { Request, Response } from "express";
-import * as jwt from 'jsonwebtoken';
+import { Request, Response } from "express";            // TypeScript
+import { TToken } from "../types/TToken";               // TypeScript
 
-import { Responser } from '../module/Responser';
-import { TToken } from "../types/TToken";
+import { Responser } from '../module/Responser';        // Module
 
-const accessTokenSecret = process.env.SECRET_TOKEN! ;
+import * as jwt from 'jsonwebtoken';                    // token
+import * as dotenv from 'dotenv';                       // token
+dotenv.config()                                         // token
+const accessTokenSecret = process.env.SECRET_TOKEN! ;   // token
 
-
+/**
+ * Permet la vérification de l'existence du token et sa transformation en parametres dans le body de la requete
+ * * req.body.tokenId       : id du user
+ * * req.body.tokenAdmin    : niveau d'admin du user
+ */
 export const authenticateJWT = (req : Request, res : Response, next : () => void) => {
     
     let reponser = new Responser<undefined>(req, res) ;

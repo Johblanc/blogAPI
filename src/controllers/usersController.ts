@@ -1,33 +1,40 @@
-import { Request, Response } from "express";
+import { Request, Response } from "express";                // TypeScript
+import { TUser } from "../types/TUser";                     // TypeScript
 
-import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
+import { Responser } from '../module/Responser';            // Module
+import { faillingString } from '../module/faillingTest';    // Module
 
-import {Responser} from '../module/Responser';
-import { faillingString } from '../module/faillingTest';
+import {UsersServices} from '../services/usersServices';    // API
 
-import * as dotenv from 'dotenv';
-import {UsersServices} from '../services/usersServices';
-import { TUser } from "../types/TUser";
+import * as bcrypt from 'bcrypt';                           // password
 
-dotenv.config()
-const accessTokenSecret = process.env.SECRET_TOKEN! ;
+import * as jwt from 'jsonwebtoken';                        // token
+import * as dotenv from 'dotenv';                           // token
+dotenv.config()                                             // token
+const accessTokenSecret = process.env.SECRET_TOKEN! ;       // token
 
-const usersService = new UsersServices()
+const usersService = new UsersServices()                    // API
 
-
+/**
+ * Class permettant le contrôle des données entrantes pour les requête users
+ * * **.register()** : Contrôle préalable à la création d'un nouveau user
+ * * **.login()** : Contrôle préalable à l'authentification d'un user
+ */
 export class UsersController 
 {
 
+    /** 
+     * Contrôle préalable à la création d'un nouveau user
+     * * Admin : 3
+     * * Request :
+     *   * body.pass => Le mot de pass du user (string)
+     *   * body.name => Le nom du user (string)
+     * * Response.data : Les informations visible du user (Partial<TUser>)
+     * */
     async register (req : Request , res : Response) : Promise<void>
     {
         let responcer = new Responser<Partial<TUser>>(req, res) ;
-        const pass = req.body.pass ;
-        const name = req.body.name ;
-
-        console.log(pass,name);
-        
-
+        const {pass , name} = req.body ;
         
         bcrypt.hash(pass, 10, async (err : any, hash : string) =>
         {
@@ -66,11 +73,18 @@ export class UsersController
         });
     }
 
+    /** 
+     * Contrôle préalable à l'authentification d'un user
+     * * Admin : 3
+     * * Request :
+     *   * body.pass => Le mot de pass du user (string)
+     *   * body.name => Le nom du user (string)
+     * * Response.data : Les informations visible du user (Partial<TUser>)
+     * */
     async login (req : Request , res : Response) : Promise<void>
     {
-        let responcer = new Responser(req , res ) ;
-        const pass = req.body.pass ;
-        const name = req.body.name ;
+        let responcer = new Responser<Partial<TUser>>(req , res ) ;
+        const {pass , name} = req.body ;
         
         if (faillingString(pass) || faillingString(name))
         {
@@ -90,16 +104,16 @@ export class UsersController
                 responcer.send() ;
             }
     
-            bcrypt.compare(pass, data!.password,async (err,result) =>
+            bcrypt.compare(pass, data!.password, async (err,result) =>
             {
                 if (result) 
                 {
                     responcer.status = 200 ;
                     responcer.message = `Connection de ${name}` ;
                     responcer.data = { 
-                        token : jwt.sign({ id: data!.id , adminLvl : data!.admin_lvl}, accessTokenSecret!),
                         id : data!.id,
-                        adminLvl : data!.admin_lvl
+                        admin_lvl : data!.admin_lvl,
+                        token : jwt.sign({ id: data!.id , adminLvl : data!.admin_lvl }, accessTokenSecret!)
                     } ;
                     responcer.send() ;
                 }

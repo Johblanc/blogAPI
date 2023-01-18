@@ -1,5 +1,6 @@
 
 
+/** Type pour le commentaire */
 export type TComment = {
     id          : number ,
     user_id     : number ,

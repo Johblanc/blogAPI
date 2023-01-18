@@ -1,4 +1,5 @@
 
+/** Type pour l'article */
 export type TArticle = {
     id          : number ,
     user_id     : number ,
