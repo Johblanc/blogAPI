@@ -64,7 +64,7 @@ export class CommentsController {
     async add (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TComment>(req, res) ;
-        const { tokenId, article_id, content} = req.body;
+        const { tokenId , article_id, content} = req.body;
     
         if ( faillingId(article_id) || faillingString(content) )
         {
@@ -92,10 +92,11 @@ export class CommentsController {
 
     /** 
      * Contrôle préalable à la modification d'un commentaire
-     * * Admin : 2
+     * * Admin : 2 ou byPassId 1 
      * * Request :
      *   * param.id => L'id du commentaire (number | string)
      *   * body.tokenId => L'id du user (number)
+     *   * body.tokenAdmin => Le niveau d'admin du user (number)
      *   * body.content => le contenu du commentaire (string)
      * * Response.data : Le commentaire modifié (TComment)
      * */
@@ -103,7 +104,7 @@ export class CommentsController {
     {
         let responser = new Responser<TComment>(req, res) ;
         const id = req.params.id ;
-        const { tokenId , content } = req.body;
+        const { tokenId , tokenAdmin , content } = req.body;
         
         if (faillingId(id) || faillingString(content))
         {
@@ -124,7 +125,7 @@ export class CommentsController {
                 return ;
             };
             
-            if(verificator?.user_id !== tokenId)
+            if(verificator?.user_id !== tokenId && tokenAdmin > 1)
             {
                 responser.status = 404 ;
                 responser.message = `Ce commentaire ne vous appartient pas` ;
@@ -149,17 +150,18 @@ export class CommentsController {
 
     /** 
      * Contrôle préalable à la suppression d'un commentaire
-     * * Admin : 2
+     * * Admin : 2 ou byPassId 1 
      * * Request :
      *   * param.id => L'id du commentaire (number | string)
      *   * body.tokenId => L'id du user (number)
+     *   * body.tokenAdmin => Le niveau d'admin du user (number)
      * * Response.data : Nombre de commentaire supprimé (number)
      * */
     async delete (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<number>(req, res) ;
         const id = Number(req.params.id);
-        const { tokenId } = req.body;
+        const { tokenId , tokenAdmin} = req.body;
     
         if ( faillingId(id) )
         {
@@ -180,7 +182,7 @@ export class CommentsController {
                 return ;
             };
 
-            if(verificator?.user_id !== tokenId)
+            if(verificator?.user_id !== tokenId && tokenAdmin > 1)
             {
                 responser.status = 404 ;
                 responser.message = `Ce commentaire ne vous appartient pas` ;

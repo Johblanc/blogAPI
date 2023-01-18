@@ -17,6 +17,7 @@ const commentsServices = new CommentsServices()                         // API
  * * **.edit()** : Contrôle préalable à la modification d'un article
  * * **.delete()** : Contrôle préalable à la suppression d'un article
  */
+
 export class ArticlesController 
 {
     /** 
@@ -101,9 +102,8 @@ export class ArticlesController
     async add (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<TArticle>(req, res) ;
-        const { tokenId , title , content } = req.body ;
+        const { tokenId, title , content } = req.body ;
     
-        // Vérifiction du Type du user_id entrant
         if ( faillingString(title) || faillingString(content) )
         {
             responser.status = 400 ;
@@ -129,10 +129,11 @@ export class ArticlesController
 
     /** 
      * Contrôle préalable à la modification d'un article
-     * * Admin : 2
+     * * Admin : 2 ou byPassId 1
      * * Request :
      *   * param.id => L'id de l'article (number | string)
      *   * body.tokenId => L'id du user (number)
+     *   * body.tokenAdmin => Le niveau d'admin du user (number)
      *   * body.title => le titre de l'article (string) / optionnel si content
      *   * body.content => le contenu de l'article (string) / optionnel si title
      * * Response.data : L'article modifié (TArticle)
@@ -141,7 +142,7 @@ export class ArticlesController
     {
         let responser = new Responser<TArticle>(req, res) ;
         const id = Number(req.params.id) ;
-        const {tokenId, title, content} = req.body;
+        const {tokenId, tokenAdmin, title, content} = req.body;
 
         if (faillingId(id) || (faillingString(title) && faillingString(content))) 
         {
@@ -163,14 +164,13 @@ export class ArticlesController
                 return ;
             };
             
-            if(verificator?.user_id !== tokenId)
+            if(verificator?.user_id !== tokenId && tokenAdmin > 1)
             {
                 responser.status = 404 ;
                 responser.message = `Cet article ne vous appartient pas` ;
                 responser.send() ;
                 return ;
             };
-            // Exécution de la bonne requête en fonction des paramètres
             let data ;
             if ( ! (faillingString(title) || faillingString(content))) 
             {
@@ -200,17 +200,18 @@ export class ArticlesController
     
     /** 
      * Contrôle préalable à la suppression d'un article
-     * * Admin : 2 
+     * * Admin : 2 ou byPassId 1 
      * * Request :
      *   * param.id => L'id de l'article (number | string)
      *   * body.tokenId => L'id du user (number)
+     *   * body.tokenAdmin => Le niveau d'admin du user (number)
      * * Response.data : Nombre d'article supprimé (number)
      * */
     async delete (req : Request , res : Response) : Promise<void>
     {
         let responser = new Responser<number>(req, res) ;
         const id = Number(req.params.id);
-        const tokenId = req.body.tokenId;
+        const { tokenId , tokenAdmin} = req.body;
     
         if (faillingId(id))
         {
@@ -230,7 +231,7 @@ export class ArticlesController
                 return ;
             };
 
-            if(verificator?.user_id === tokenId)
+            if(verificator?.user_id !== tokenId && tokenAdmin > 1)
             {
                 responser.status = 404 ;
                 responser.message = `Cet article ne vous appartient pas` ;
