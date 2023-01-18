@@ -1,9 +1,8 @@
+import { QueryResult } from "pg";                   // API
 
+import { client } from "../module/clientData";      // Client
 
-import { QueryResult } from 'pg';
-import {client} from '../module/clientData';
-import { TUser } from '../types/TUser';
-
+import { TUser } from '../types/TUser';             // TypeScript
 
 /**
  * Permet la gestion des requetes SQL users.

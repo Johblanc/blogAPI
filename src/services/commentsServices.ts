@@ -25,7 +25,7 @@ export class CommentsServices
      */
     async getAll() : Promise<TComment[] | undefined>
     {
-        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments');
+        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE not_achive = true');
 
         if(data.rowCount)
         {
@@ -42,7 +42,7 @@ export class CommentsServices
      */
     async getById( id :number) : Promise<TComment | undefined>
     {
-        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE id = $1',[id]);
+        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE id = $1 AND not_achive = true',[id]);
 
         if(data.rowCount)
         {
@@ -59,7 +59,7 @@ export class CommentsServices
      */
     async getByArticleId(article_id :number) : Promise<TComment[] | undefined>
     {
-        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE article_id = $1',[article_id]);
+        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE article_id = $1 AND not_achive = true',[article_id]);
 
         if(data.rowCount)
         {
@@ -96,7 +96,7 @@ export class CommentsServices
      */
     async edit(id :number,content : string) : Promise<TComment | undefined>
     {
-        const data : QueryResult<TComment> = await client.query('UPDATE comments SET content = $1, modified = NOW() WHERE id = $2 RETURNING *',[ content , id]);
+        const data : QueryResult<TComment> = await client.query('UPDATE comments SET content = $1, modified = NOW() WHERE id = $2 AND not_achive = true RETURNING *',[ content , id]);
 
         if(data.rowCount)
         {
@@ -113,7 +113,7 @@ export class CommentsServices
      */
     async delete(id :number) : Promise<number>
     {
-        const data : QueryResult<TComment> = await client.query('DELETE FROM comments WHERE id = $1', [ id ] );
+        const data : QueryResult<TComment> = await client.query('UPDATE comments SET not_achive = false, modified = NOW() WHERE id = $1 RETURNING *', [ id ] );
 
         return data.rowCount;
     }
@@ -126,7 +126,7 @@ export class CommentsServices
      */
     async deleteByArticleId(articleId :number) : Promise<number>
     {
-        const data : QueryResult<TComment> = await client.query('DELETE FROM comments WHERE id = $1', [ articleId ] );
+        const data : QueryResult<TComment> = await client.query('UPDATE comments SET not_achive = false, modified = NOW() WHERE article_id = $1 RETURNING *', [ articleId ] );
 
         return data.rowCount;
     }

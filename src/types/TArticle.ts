@@ -8,5 +8,6 @@ export type TArticle = {
     content     : string ,
     created     : Date ,
     modified    : Date,
+    not_archive : boolean,
     comments ?  : TComment[]
 }

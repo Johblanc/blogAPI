@@ -1,5 +1,5 @@
 import * as express from 'express';                                 // API
-import {UsersController} from '../controllers/usersController';     // API
+import { UsersController } from '../controllers/usersController';   // API
 
 
 export const usersRouter = express.Router();

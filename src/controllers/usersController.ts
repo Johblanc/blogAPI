@@ -23,6 +23,7 @@ const usersService = new UsersServices()                    // API
 export class UsersController 
 {
 
+
     /** 
      * Contrôle préalable à la création d'un nouveau user
      * * Admin : 3
@@ -31,6 +32,8 @@ export class UsersController
      *   * body.name => Le nom du user (string)
      * * Response.data : Les informations visible du user (Partial<TUser>)
      * */
+
+
     async register (req : Request , res : Response) : Promise<void>
     {
         let responcer = new Responser<Partial<TUser>>(req, res) ;
