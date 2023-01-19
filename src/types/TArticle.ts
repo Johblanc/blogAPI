@@ -9,5 +9,6 @@ export type TArticle = {
     created     : Date ,
     modified    : Date,
     not_archive : boolean,
+    user_name ? : string ,
     comments ?  : TComment[]
 }

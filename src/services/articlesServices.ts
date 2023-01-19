@@ -26,7 +26,7 @@ export class ArticlesServices{
      */
     async getAll() : Promise<TArticle[] | undefined>
     {
-        const data : QueryResult<TArticle> = await client.query('SELECT * FROM articles WHERE not_achive = true');
+        const data : QueryResult<TArticle> = await client.query('SELECT articles.*, name AS user_name FROM articles INNER JOIN users ON articles.user_id = users.id WHERE not_achive = true');
 
         if(data.rowCount)
         {
@@ -43,7 +43,7 @@ export class ArticlesServices{
      */
     async getById(id : number) : Promise<TArticle | undefined>
     {
-        const data : QueryResult<TArticle> = await client.query('SELECT * FROM articles WHERE id = $1 AND not_achive = true', [id]);
+        const data : QueryResult<TArticle> = await client.query('SELECT articles.* , name AS user_name FROM articles INNER JOIN users ON articles.user_id = users.id WHERE articles.id = $1 AND not_achive = true', [id]);
 
         if(data.rowCount)
         {
@@ -66,7 +66,7 @@ export class ArticlesServices{
 
         if(data.rowCount)
         {
-            return data.rows[0];
+            return this.getById(data.rows[0].id);
         }
         return undefined
     }
@@ -85,7 +85,7 @@ export class ArticlesServices{
 
         if(data.rowCount)
         {
-            return data.rows[0];
+            return this.getById(data.rows[0].id);;
         }
         return undefined
     }
@@ -104,7 +104,7 @@ export class ArticlesServices{
 
         if(data.rowCount)
         {
-            return data.rows[0];
+            return this.getById(data.rows[0].id);;
         }
         return undefined
     }
@@ -122,7 +122,7 @@ export class ArticlesServices{
 
         if(data.rowCount)
         {
-            return data.rows[0];
+            return this.getById(data.rows[0].id);;
         }
         return undefined
     }
@@ -135,7 +135,7 @@ export class ArticlesServices{
      */
     async delete(id : number ) : Promise<number | undefined>
     {
-        const data : QueryResult<TArticle> = await client.query('UPDATE articles SET not_achive = false WHERE id = $2 RETURNING *', [id]);
+        const data : QueryResult<TArticle> = await client.query('UPDATE articles SET not_achive = false, modified = NOW() WHERE id = $1 RETURNING *', [id]);
 
         return data.rowCount;
     }

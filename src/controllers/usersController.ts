@@ -116,6 +116,7 @@ export class UsersController
                     responcer.data = { 
                         id : data!.id,
                         admin_lvl : data!.admin_lvl,
+                        name : data!.name,
                         token : jwt.sign({ id: data!.id , adminLvl : data!.admin_lvl }, accessTokenSecret!)
                     } ;
                     responcer.send() ;

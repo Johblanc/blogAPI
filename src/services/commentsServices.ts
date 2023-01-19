@@ -25,7 +25,7 @@ export class CommentsServices
      */
     async getAll() : Promise<TComment[] | undefined>
     {
-        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE not_achive = true');
+        const data : QueryResult<TComment> = await client.query('SELECT comments.*, name AS user_name FROM comments INNER JOIN users ON comments.user_id = users.id WHERE not_achive = true');
 
         if(data.rowCount)
         {
@@ -42,7 +42,7 @@ export class CommentsServices
      */
     async getById( id :number) : Promise<TComment | undefined>
     {
-        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE id = $1 AND not_achive = true',[id]);
+        const data : QueryResult<TComment> = await client.query('SELECT comments.*, name AS user_name FROM comments INNER JOIN users ON comments.user_id = users.id WHERE comments.id = $1 AND not_achive = true',[id]);
 
         if(data.rowCount)
         {
@@ -59,7 +59,7 @@ export class CommentsServices
      */
     async getByArticleId(article_id :number) : Promise<TComment[] | undefined>
     {
-        const data : QueryResult<TComment> = await client.query('SELECT * FROM comments WHERE article_id = $1 AND not_achive = true',[article_id]);
+        const data : QueryResult<TComment> = await client.query('SELECT comments.*, name AS user_name FROM comments INNER JOIN users ON comments.user_id = users.id WHERE article_id = $1 AND not_achive = true',[article_id]);
 
         if(data.rowCount)
         {
@@ -100,7 +100,7 @@ export class CommentsServices
 
         if(data.rowCount)
         {
-            return data.rows[0];
+            return this.getById(data.rows[0].id);
         }
         return undefined
     }

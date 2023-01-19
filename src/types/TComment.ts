@@ -7,6 +7,7 @@ export type TComment = {
     article_id  : number ,
     content     : string ,
     created     : Date ,
-    modified    : Date,
-    not_archive : boolean
+    modified    : Date ,
+    not_archive : boolean ,
+    user_name ? : string 
 }
